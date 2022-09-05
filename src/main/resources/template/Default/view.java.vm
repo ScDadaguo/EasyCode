@@ -1,0 +1,38 @@
+##引入宏定义
+$!{define.vm}
+
+##使用宏定义设置回调（保存位置与文件后缀）
+#save("/easycode", "View.java")
+
+##使用宏定义设置包后缀
+#setPackageSuffix("easycode")
+
+##使用全局变量实现默认包导入
+$!{autoImport.vm}
+import lombok.*;
+import java.time.LocalDateTime;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+##使用宏定义实现类注释信息
+#tableComment("视图类")
+
+@Data
+@ApiModel
+public class $!{tableInfo.name}View{
+    #foreach($column in $tableInfo.fullColumn)
+        #if(${column.comment})/**
+         * ${column.comment}
+         */#end
+
+        #if($!{tool.getClsNameByFullName($column.type)}=="Timestamp")
+            @ApiModelProperty("${column.comment}")
+            @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+            private  LocalDateTime $!{column.name};
+        #else
+            @ApiModelProperty("${column.comment}")
+            private  $!{tool.getClsNameByFullName($column.type)} $!{column.name};
+        #end
+    #end
+}

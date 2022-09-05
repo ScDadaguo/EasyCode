@@ -35,7 +35,7 @@ repositories {
 
 intellij {
 //    插件名称
-    pluginName 'EasyCode'
+    pluginName 'souche-EasyCode'
     // 沙箱目录位置，用于保存IDEA的设置，默认在build文件下面，防止clean，放在根目录下。
     sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
     // 开发环境运行时使用的版本
@@ -56,6 +56,7 @@ intellij {
 dependencies {
     // jackson工具
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+    compile 'com.alibaba:fastjson:+'
     // guava工具
 //    compile 'com.google.guava:guava:29.0-jre'
     // velocity支持

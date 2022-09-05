@@ -1,0 +1,35 @@
+##引入宏定义
+$!{define.vm}
+
+##使用宏定义设置回调（保存位置与文件后缀）
+#save("/easycode", "Arg.java")
+
+##使用宏定义设置包后缀
+#setPackageSuffix("easycode")
+#set($author = "dadaguo")
+#set($businessPkId = $tool.append($tool.firstLowerCase($tableInfo.name), "Id"))
+##使用全局变量实现默认包导入
+$!{autoImport.vm}
+import lombok.*;
+import java.time.LocalDateTime;
+
+
+##使用宏定义实现类注释信息
+#tableComment("Arg")
+@Data
+public class $!{tableInfo.name}Arg{
+    #foreach($column in $tableInfo.otherColumn)
+        #if(${column.comment}&&${column.name}!=$!businessPkId)/**
+         * ${column.comment}
+         */#end
+
+        #if(${column.name}==$!businessPkId)
+
+        #elseif($!{tool.getClsNameByFullName($column.type)}!="Timestamp")
+            private $!{tool.getClsNameByFullName($column.type)} $!{column.name};
+        #else
+            private LocalDateTime $!{column.name};
+        #end
+    #end
+
+}

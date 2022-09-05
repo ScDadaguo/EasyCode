@@ -44,12 +44,13 @@ public class GenerateDefaultConfigTest {
         File columnConfigDir = new File(GenerateDefaultConfigTest.class.getResource("/columnConfig").getFile());
         loadColumnConfig(settingsStorage, columnConfigDir);
 
-        String json = JSON.toJson(settingsStorage);
+        String json = com.alibaba.fastjson.JSON.toJSONString(settingsStorage);
+
         // 所有的换行符号均改为\n
         // 1.windows处理
         json = json.replace("\\r\\n", "\\n");
-        // 2.mac处理
-        json = json.replace("\\r", "\\n");
+//        // 2.mac处理
+//        json = json.replace("\\r", "\\n");
         FileUtil.writeToFile(new File(GenerateDefaultConfigTest.class.getResource("/").getFile().replace("out", "src").replace("test", "main").replace("classes", "resources") + "defaultConfig.json"), json);
     }
 
@@ -64,7 +65,7 @@ public class GenerateDefaultConfigTest {
                 for (File file : dir.listFiles()) {
                     Template template = new Template();
                     template.setName(file.getName());
-                    template.setCode(FileUtilRt.loadFile(file));
+                    template.setCode(FileUtilRt.loadFile(file,"UTF-8"));
                     templateGroup.getElementList().add(template);
                 }
             }
@@ -83,7 +84,7 @@ public class GenerateDefaultConfigTest {
                 for (File file : dir.listFiles()) {
                     GlobalConfig globalConfig = new GlobalConfig();
                     globalConfig.setName(file.getName());
-                    globalConfig.setValue(FileUtilRt.loadFile(file));
+                    globalConfig.setValue(FileUtilRt.loadFile(file,"UTF-8"));
                     globalConfigGroup.getElementList().add(globalConfig);
                 }
             }
@@ -98,7 +99,7 @@ public class GenerateDefaultConfigTest {
             TypeMapperGroup typeMapperGroup = new TypeMapperGroup();
             typeMapperGroup.setName(file.getName().replace(".json", ""));
             if (file.isFile()) {
-                String json = FileUtilRt.loadFile(file);
+                String json = FileUtilRt.loadFile(file,"UTF-8");
                 typeMapperGroup.setElementList(JSON.parse(json, new TypeReference<List<TypeMapper>>() {
                 }));
             }
@@ -113,7 +114,7 @@ public class GenerateDefaultConfigTest {
             ColumnConfigGroup columnConfigGroup = new ColumnConfigGroup();
             columnConfigGroup.setName(file.getName().replace(".json", ""));
             if (file.isFile()) {
-                String json = FileUtilRt.loadFile(file);
+                String json = FileUtilRt.loadFile(file,"UTF-8");
                 columnConfigGroup.setElementList(JSON.parse(json, new TypeReference<List<ColumnConfig>>() {
                 }));
             }

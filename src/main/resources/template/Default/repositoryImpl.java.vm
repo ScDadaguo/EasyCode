@@ -1,0 +1,82 @@
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, "RepositoryImpl"))
+##设置回调
+$!callback.setFileName($tool.append($tableName, ".java"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/easycode"))
+#set($businessPkId = $tool.append($tool.firstLowerCase($tableInfo.name), "Id"))
+
+#if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}easycode;
+
+import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+
+/**
+ * $!{tableInfo.comment}($!{tableInfo.name})表服务实现类
+ *
+ * @author $!author
+ * @since $!time.currTime()
+ */
+@Service
+public class $!{tableName} implements $!{tableInfo.name}Repository {
+@Resource
+private $!{tableInfo.name}Dao $!tool.firstLowerCase($!{tableInfo.name})Dao;
+
+/**
+ * 通过ID查询单条数据
+ *
+ * @param $!businessPkId 业务主键
+ * @return 实例对象
+ */
+@Override
+public $!{tableInfo.name} queryBy$tool.append($tableInfo.name, "Id")(String $!businessPkId) {
+        return this.fromPO(this.$!{tool.firstLowerCase($!{tableInfo.name})}Dao.queryBy$tool.append($tableInfo.name, "Id")($!businessPkId));
+        }
+
+/**
+ * 新增数据
+ *
+ * @param $!tool.firstLowerCase($!{tableInfo.name}) 实例对象
+ * @return 实例对象
+ */
+@Override
+public void insert($!{tableInfo.name} $!tool.firstLowerCase($!{tableInfo.name})) {
+        this.$!{tool.firstLowerCase($!{tableInfo.name})}Dao.insert(toPO($!tool.firstLowerCase($!{tableInfo.name})));
+        }
+
+/**
+ * 修改数据
+ *
+ * @param $!tool.firstLowerCase($!{tableInfo.name}) 实例对象
+ */
+@Override
+public void update($!{tableInfo.name} $!tool.firstLowerCase($!{tableInfo.name})) {
+        this.$!{tool.firstLowerCase($!{tableInfo.name})}Dao.updateBy$tool.firstUpperCase($!businessPkId)(toPO($!tool.firstLowerCase($!{tableInfo.name})));
+        }
+
+public $!{tableInfo.name}PO toPO($!{tableInfo.name} entity){
+    $!{tableInfo.name}PO po=new $!{tableInfo.name}PO();
+    #foreach($column in $tableInfo.fullColumn)
+        #if($!{tool.getClsNameByFullName($column.type)}=="Timestamp")
+                po.set$!{tool.firstUpperCase($column.name)}(Optional.ofNullable(entity.get$!{tool.firstUpperCase($column.name)}()).map(Timestamp::valueOf).orElse(null));
+        #else
+                po.set$!{tool.firstUpperCase($column.name)}(entity.get$!{tool.firstUpperCase($column.name)}());
+        #end
+    #end
+        return po;
+        }
+
+public $!{tableInfo.name} fromPO($!{tableInfo.name}PO po){
+    $!{tableInfo.name}Data data=$!{tableInfo.name}Data.builder()
+    #foreach($column in $tableInfo.fullColumn)
+        #if($!{tool.getClsNameByFullName($column.type)}=="Timestamp")
+                .${column.name}(Optional.ofNullable(po.get$!{tool.firstUpperCase($column.name)}()).map(Timestamp::toLocalDateTime).orElse(null))
+        #else
+                .${column.name}(po.get$!{tool.firstUpperCase($column.name)}())
+        #end
+    #end
+        .build();
+        return new $!{tableInfo.name}(data);
+        }
+        }

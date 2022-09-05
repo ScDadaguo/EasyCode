@@ -1,0 +1,41 @@
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, "Repository"))
+##设置回调
+$!callback.setFileName($tool.append($tableName, ".java"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/easycode"))
+#set($businessPkId = $tool.append($tool.firstLowerCase($tableInfo.name), "Id"))
+
+#if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}easycode;
+
+import $!{tableInfo.savePackageName}.easycode.$!{tableInfo.name};
+
+/**
+ * $!{tableInfo.comment}($!{tableInfo.name})表服务接口
+ *
+ * @author $!author
+ * @since $!time.currTime()
+ */
+public interface $!{tableName} {
+
+        /**
+         * 通过业务ID查询单条数据
+         *
+         * @param $!businessPkId 业务主键
+         * @return 实例对象
+         */
+    $!{tableInfo.name} queryBy$tool.append($tableInfo.name, "Id")(String $!businessPkId);
+
+        /**
+         * 新增数据
+         *
+         * @param $!tool.firstLowerCase($!{tableInfo.name}) 实例对象
+         */
+        void insert($!{tableInfo.name} $!tool.firstLowerCase($!{tableInfo.name}));
+
+        /**
+         * 修改数据
+         *
+         * @param $!tool.firstLowerCase($!{tableInfo.name}) 实例对象
+         */
+        void update($!{tableInfo.name} $!tool.firstLowerCase($!{tableInfo.name}));
+}

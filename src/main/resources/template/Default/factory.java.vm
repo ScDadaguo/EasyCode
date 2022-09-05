@@ -1,0 +1,46 @@
+##定义初始变量
+#set($tableName = $tool.append($tableInfo.name, "Factory"))
+##设置回调
+$!callback.setFileName($tool.append($tableName, ".java"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/easycode"))
+#set($businessPkId = $tool.append($tool.firstLowerCase($tableInfo.name), "Id"))
+
+#if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}easycode;
+
+import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+
+/**
+ * $!{tableInfo.comment}($!{tableInfo.name})实体工厂类
+ *
+ * @author $!author
+ * @since $!time.currTime()
+ */
+@Service
+public class $!{tableName} {
+
+@Resource
+private IdGenerateComponent idGenerateComponent;
+
+/**
+ * 创建实体
+ *
+ * @param arg arg
+ * @return 实体对象
+ */
+public $!{tableInfo.name} create$!{tableInfo.name}($!{tableInfo.name}Arg arg) {
+    $!{tableInfo.name}.$!{tableInfo.name}Builder builer=this.fromArg(arg);
+        builer.$businessPkId(idGenerateComponent.generateId(IdGenerateTypeEnum.KEY))
+        return builer.build();
+        }
+
+public $!{tableInfo.name}.$!{tableInfo.name}Builder fromArg($!{tableInfo.name}Arg arg){
+        return $!{tableInfo.name}Data.builder()
+    #foreach($column in $tableInfo.otherColumn)
+            .${column.name}(arg.get$!{tool.firstUpperCase($column.name)}())
+    #end
+        ;
+        }
+        }
